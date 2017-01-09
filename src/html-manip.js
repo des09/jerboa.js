@@ -95,6 +95,7 @@ export function addBox(spot, toggled) {
             } else {
                 openSpot = null;
             }
+            adjustV(spot.firstChild)
         }
     });
 
@@ -112,7 +113,31 @@ export function addBox(spot, toggled) {
     container.classList.add('feedback-container');
     box.appendChild(container);
 
+    addBoxClass(box,spot);
+
     return {box, container};
+}
+function adjustV(box){
+    let b = box.getBoundingClientRect();
+    console.log("here " + b.bottom >= window.innerHeight)
+    console.log("here " + b.bottom >= document.documentElement.clientHeight)
+    let i = 0;
+    while( i < 3 && ( b.bottom >= window.innerHeight ||  b.bottom >= document.documentElement.clientHeight)){
+        i += 1;
+        let v = box.style.top;
+        v = parseInt(v.indexOf("px")>0 ? v.substring(0, v.length -2) : "0" ) - 50
+        box.style.top = v + "px"
+        console.log("here adjust")
+    }
+}
+function addBoxClass(box,spot){
+    let b = spot.getBoundingClientRect();
+    let s1 = "-bottom"
+    let s2 = "-right"
+    if( b.left < window.innerHeight / 2)
+        s2="-left"
+    console.log("HERE " + s2)
+    box.classList.add('feedback-box' + s1 + s2);
 }
 
 export function closeInfoBox() {
@@ -466,6 +491,8 @@ export function createInfoBox(spot, payload) {
             closeInfoBox();
         }
     });
-
-    return Object.assign({}, parts, boxParts);
+    if(Object.assign) {
+        return Object.assign({}, parts, boxParts);
+    }
+    return
 }
